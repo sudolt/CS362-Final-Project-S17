@@ -33,69 +33,91 @@ public class UrlValidatorTest extends TestCase {
       super(testName);
    }
 
-
-   public void testManualTest()
-   {
-	   // Not sure what's broken and what isn't, so we're gonna check all of the standard options
-	   
+   // Standard options test
+   @Test
+   public void isValidTest01() {
 	   // Check standard options
 	   UrlValidator urlVal = new UrlValidator();
 	   assertTrue(urlVal.isValid("http://www.amazon.com"));
+	   assertTrue(urlVal.isValid("http://www.amazon.com/index.html"));
+	   assertTrue(urlVal.isValid("http://www.amazon.com:80/test/index.html"));
 	   assertFalse(urlVal.isValid("www.amazon.com"));	// Should fail because no scheme
 	   assertFalse(urlVal.isValid(null));
 	   assertFalse(urlVal.isValid("汉"));	// Should fail because Non-ASCII
 	   assertFalse(urlVal.isValid("http://amazon.com///test1"));
-	   
-	   // Check all scheme option
-	   urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_ALL_SCHEMES);
-	   assertTrue(urlVal.isValid("htt://www.amazon.com"));	
-	   assertTrue(urlVal.isValid("ftp://www.amazon.com"));	
-	   assertTrue(urlVal.isValid("h://www.amazon.com"));	
-	   assertFalse(urlVal.isValid("www.amazon.com"));				// Should fail because no scheme
-	   assertFalse(urlVal.isValid("http://localhost/home/index.html"));	// Should be false
-	   
-	   // Check local URL option
-	   urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_LOCAL_URLS);
-	   /* FOUND A FAIL CASE HERE - Both lines 54 and 55 fail. */
-	   //assertTrue(urlVal.isValid("http://localhost/home/index.html"));	// Should be true
-	   //assertTrue(urlVal.isValid("http://localhost/index.html"));	// Should be true
-	   assertFalse(urlVal.isValid("localhost/test/index.html"));	// No scheme
-	   
-	   // Check double slashes option
-	   urlVal = new UrlValidator(null, null, UrlValidator.ALLOW_2_SLASHES);
-	   assertTrue(urlVal.isValid("http://www.amazon.com/test1//test2"));
-	   /* EITHER A BUG OR AN OVERSIGHT? - More than 2 slashes can be added when the option is on */
-	   //assertFalse(urlVal.isValid("http://www.amazon.com/test1///test2"));
    }
    
-   
-   public void testYourFirstPartition()
-   {
+   // Scheme testing
+   @Test
+   public void isValidTest02() {
+	   String[] schemes = {"http","https"};
+	   UrlValidator urlVal = new UrlValidator(schemes);
+	   // Valid URL
+	   assertTrue(urlVal.isValid("http://www.amazon.com/pathQuery#Fragment"));
+	   // Invalid Schemes
+	   assertFalse(urlVal.isValid("htt://www.amazon.com/pathQuery#Fragment"));
+	   assertFalse(urlVal.isValid("httpss://www.amazon.com/pathQuery#Fragment"));
+	   // Invalid Host Name
+	   assertFalse(urlVal.isValid("http:///pathQuery#Fragment"));
+	   // Invalid path, "//"" not allowed
+	   assertFalse(urlVal.isValid("http://www.amazon.com//pathQuery#Fragment"));
+	   // Valid Query, null query returns true.
+	   assertTrue(urlVal.isValid("http://www.amazon.com/path"));
+	   // BUG, the beginning of the Query should be denoted by "?", but it is disallowed.
+	   assertTrue(urlVal.isValid("http://www.amazon.com/path?Query#Fragment"));
 	   
+	   urlVal = new UrlValidator(UrlValidator.ALLOW_ALL_SCHEMES);
+	   // Valid Schemes, all properly formatted schemes should be valid.
+	   assertTrue(urlVal.isValid("http://www.amazon.com/path.htmlQuery#Fragment"));
+	   assertTrue(urlVal.isValid("ht://www.amazon.com/path.htmlQuery#Fragment"));
+	   assertTrue(urlVal.isValid("htttps://www.amazon.com/path.htmlQuery#Fragment"));
+	   assertTrue(urlVal.isValid("httttttttsssssssss://www.amazon.com/path.htmlQuery#Fragment"));
+	   // Invalid scheme, numbers are not proper format?
+	   assertFalse(urlVal.isValid("12345://www.amazon.com/path.htmlQuery#Fragment"));
+	   // Invalid scheme, scheme cannot be null
+	   assertFalse(urlVal.isValid("://www.amazon.com/path.htmlQuery#Fragment"));
    }
    
-   public void testYourSecondPartition(){
-	   
+   // Fragment testing
+   @Test
+   public void isValidTest03() {
+	   UrlValidator urlVal = new UrlValidator(UrlValidator.NO_FRAGMENTS);
+	   // Valid URL, no fragments
+	   assertTrue(urlVal.isValid("http://www.amazon.com/path.htmlQuery"));
+	   // Invalid URL, fragments present
+	   assertFalse(urlVal.isValid("http://www.amazon.com/path.html#Fragment"));
    }
    
+   // Double Slash test
+   @Test
+   public void isValidTest04() {
+	   UrlValidator urlVal = new UrlValidator(UrlValidator.ALLOW_2_SLASHES);
+	   // Valid URL
+	   assertTrue(urlVal.isValid("http://www.amazon.com/pathQuery#Fragment"));
+	   // Valid Path, "//" allowed
+	   assertTrue(urlVal.isValid("http://www.amazon.com//pathQuery#Fragment"));
+	   // BUG. Invalid Path, ALLOW_2_SLASHES states that it allows 2 slashes in the path, adding more should be invalid but is not.
+	   assertFalse(urlVal.isValid("http://www.amazon.com////////pathQuery#Fragment"));
+	   // Invalid Path, zero path slashes 
+	   assertFalse(urlVal.isValid("http://www.amazon.compathQuery#Fragment"));
+   }
    
-   public void testIsValid()
+   // Local URL test
+   @Test
+   public void isValidTest05() {
+	   UrlValidator urlVal = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
+	   // BUG, Valid Local URL, does not accept.
+	   assertTrue(urlVal.isValid("http://amazon/"));
+	   // Valid Local Url
+	   assertTrue(urlVal.isValid("http://amazon/path.html"));
+   }
+   
+   @Test
+   public void randomTestIsValid()
    {
 	   for(int i = 0;i<10000;i++)
 	   {
 		   
 	   }
    }
-   
-   public void testAnyOtherUnitTest()
-   {
-	   
-   }
-   /**
-    * Create set of tests by taking the testUrlXXX arrays and
-    * running through all possible permutations of their combinations.
-    *
-    * @param testObjects Used to create a url.
-	*/
-
 }
