@@ -27,7 +27,7 @@ import java.util.Calendar;
  */
 
 public class UrlValidatorTest extends TestCase {
-	
+
    private static final long TestTimeout = 60 * 500 * 1; /* Timeout at 30 seconds */
    private static final int NUM_TESTS=100;
 
@@ -142,33 +142,33 @@ public class UrlValidatorTest extends TestCase {
 
       long startTime = Calendar.getInstance().getTimeInMillis();
       long elapsed = Calendar.getInstance().getTimeInMillis() - startTime;
-	  
-	  System.out.println("Start testing...");
+
+      System.out.println("Start testing...");
 
       for(int iteration = 0; elapsed < TestTimeout; iteration++) {
-		  long randomseed = 7;	// Change this for different values
-		  Random random = new Random(randomseed);
-		  UrlValidator urlVal = new UrlValidator();
-		  
-		  for (int i = 0; i < NUM_TESTS; i++) {
-			String Scheme = selectMember(random, validSchemes);
-			String Authority = selectMember(random, validAuthorities);
-			/* BUG - Ports seem to sometimes cause URL validity to fail. */
-			String Ports = selectMember(random, validPorts);
-			String Paths = selectMember(random, validPaths);
-			/* BUG, all non-null queries throw an exception */
-			String Query = selectMember(random, queries); 
-			String URL = Scheme + Authority + Ports + Paths + Query;
-		  
-			assertTrue(URL, urlVal.isValid(URL)); 
-		  }
-		  
-		  elapsed = (Calendar.getInstance().getTimeInMillis() - startTime);
-		  if((iteration%10000)==0 && iteration!=0)
-			  System.out.println("elapsed time: "+ elapsed + " of "+TestTimeout);
+	 long randomseed = 7;	// Change this for different values
+	 Random random = new Random(randomseed);
+	 UrlValidator urlVal = new UrlValidator();
+
+	 for (int i = 0; i < NUM_TESTS; i++) {
+	    String Scheme = selectMember(random, validSchemes);
+	    String Authority = selectMember(random, validAuthorities);
+	    /* BUG - Ports seem to sometimes cause URL validity to fail. */
+	    String Ports = selectMember(random, validPorts);
+	    String Paths = selectMember(random, validPaths);
+	    /* BUG, all non-null queries throw an exception */
+	    String Query = selectMember(random, queries); 
+	    String URL = Scheme + Authority + Ports + Paths + Query;
+
+	    assertTrue(URL, urlVal.isValid(URL)); 
+	 }
+
+	 elapsed = (Calendar.getInstance().getTimeInMillis() - startTime);
+	 if((iteration%10000)==0 && iteration!=0)
+	    System.out.println("elapsed time: "+ elapsed + " of "+TestTimeout);
       }
-	  
-	  System.out.println("Done testing...");
+
+      System.out.println("Done testing...");
    }
 
    // Test invalid partitions
@@ -176,30 +176,30 @@ public class UrlValidatorTest extends TestCase {
 
       long startTime = Calendar.getInstance().getTimeInMillis();
       long elapsed = Calendar.getInstance().getTimeInMillis() - startTime;
-	  
-	  System.out.println("Start testing...");
+
+      System.out.println("Start testing...");
 
       for(int iteration = 0; elapsed < TestTimeout; iteration++) {
-		  long randomseed = 7;	// Change this for different values
-		  Random random = new Random(randomseed);
-		  UrlValidator urlVal = new UrlValidator();
-		  
-		  for (int i = 0; i < NUM_TESTS; i++) {
-			String Scheme = selectMember(random, invalidSchemes);
-			String Authority = selectMember(random, invalidAuthorities);
-			String Ports = selectMember(random, invalidPorts);
-			String Paths = selectMember(random, invalidPaths);
-			String Query = selectMember(random, queries); 
-			String URL = Scheme + Authority + Ports + Paths + Query;
-		  
-			assertFalse(URL, urlVal.isValid(URL)); 
-		  }
-		  
-		  elapsed = (Calendar.getInstance().getTimeInMillis() - startTime);
-		  if((iteration%10000)==0 && iteration!=0)
-			  System.out.println("elapsed time: "+ elapsed + " of "+TestTimeout);
+	 long randomseed = 7;	// Change this for different values
+	 Random random = new Random(randomseed);
+	 UrlValidator urlVal = new UrlValidator();
+
+	 for (int i = 0; i < NUM_TESTS; i++) {
+	    String Scheme = selectMember(random, invalidSchemes);
+	    String Authority = selectMember(random, invalidAuthorities);
+	    String Ports = selectMember(random, invalidPorts);
+	    String Paths = selectMember(random, invalidPaths);
+	    String Query = selectMember(random, queries); 
+	    String URL = Scheme + Authority + Ports + Paths + Query;
+
+	    assertFalse(URL, urlVal.isValid(URL)); 
+	 }
+
+	 elapsed = (Calendar.getInstance().getTimeInMillis() - startTime);
+	 if((iteration%10000)==0 && iteration!=0)
+	    System.out.println("elapsed time: "+ elapsed + " of "+TestTimeout);
       }
-	  
-	  System.out.println("Done testing...");
+
+      System.out.println("Done testing...");
    }
 }
